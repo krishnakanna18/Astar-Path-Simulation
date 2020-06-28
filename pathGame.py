@@ -8,13 +8,38 @@ class Button:
     def __init__(self,master):
         self.button=tk.Button(master)
         self.button["bg"]="black"
+        self.button.rowconfigure(0,weight=2)
+        self.button.columnconfigure(0,weight=2)
         self.button["padx"]=master.winfo_screenwidth()//200
         self.button["pady"]=master.winfo_screenheight()//200
-        self.button["command"]=self.onclick
-        self.button.bind("<Enter>",self.onEnter)
-        self.button.bind("<Leave>",self.onLeave)
+        self.button["command"]=self.onPress
+        self.button.bind("<Enter>",self.onMotion)
+        # self.button.bind("<ButtonPress-1>",self.onPress)
+        # self.button.bind("<B1-Motion>",self.onMotion)
+        # self.button.bind("<ButtonRelease-1>",self.onRelase)
+        # self.button.bind("<Leave>",self.onLeave)
 
-    def onEnter(self,e):
+    def onPress(self):
+        print("Pressed button")
+        global press
+        if(press==1):
+            self.change()
+            press=0
+            return
+        if(press==0):
+            self.change()
+            press=1
+            return
+
+    def onMotion(self,e):
+        global press
+        if(press==0):
+            return
+        # print("on Motion")
+        if(press==1):
+            self.change()
+
+    def change(self):
         global obstacle
         if(self.button["bg"]=="yellow"):
             return
@@ -82,7 +107,7 @@ class node:
 def undoObstacles():
     while(len(obstacle)>0):
         for block in obstacle:
-            arr[block[0]][block[1]].onEnter("<Enter>")
+            arr[block[0]][block[1]].change()
 
 
 def construct(goal,moves):
@@ -152,7 +177,10 @@ def astar(s,goal):
                 child=open.getState(possible.points())
                 if(possible.g<child.g):
                     child.parent=cur
-                    open.decrease_key([0,child],possible.f)
+                    try:
+                        open.decrease_key([0,child],possible.f)
+                    except:
+                        print(cur,child,possible,"The possible")
             else:
                 open.push([possible.f,possible])
     erase(sol)
@@ -171,7 +199,7 @@ def renderGame(source,goal):
         erase(sol)
         totalMoves["text"]=""
         st=time.time()
-        root.after(2000,renderGame,source,goal)
+        root.after(5000,renderGame,source,goal)
         print("Time taken: ",time.time()-st)
 
 
@@ -209,30 +237,35 @@ def startrender():
 # obstacle=[[i,2]for i in range(99)]+[[i,60]for i in range(99)]
 obstacle=[]
 goal=[]
-n=30
+n=20
+press=0
 root=tk.Tk()
 root.title("A* Pathfind Tracing")
 # root.attributes('-zoomed',True)
 game=tk.Frame(root)
-game.pack(fill=tk.BOTH,expand=True)
+# game.pack(fill=tk.BOTH,expand=True)
+game.pack()
+Grid=tk.Frame(game)
 arr=[[0 for j in range(n)] for i in range(n)]
 # astar([1,1],goal)
 for i in range(n):
     for j in range(n):
-        arr[i][j]=Button(game)
+        arr[i][j]=Button(Grid)
         arr[i][j].posSet(i,j)
 print("Before")
-
-closeButton=tk.Button(game,text="Close the game",command=root.destroy)
+Grid.grid(row=0,column=0)
+controls=tk.Frame(game)
+controls.grid(row=0,column=n+4)
+closeButton=tk.Button(controls,text="Close the game",command=root.destroy)
 closeButton.grid(row=n//2,column=j+10,sticky="nwes")
-obstacleInfo=tk.Frame(game)
+obstacleInfo=tk.Frame(controls)
 obstacleInfo.grid(row=n//4,column=j+10)
 obstacleText="Number of obstacle is: "
 displayObstacle=tk.Label(obstacleInfo,text=obstacleText).grid(row=n//4,column=j+8,sticky="nwse")
 obstacleNumber=tk.Label(obstacleInfo,text=str(len(obstacle)))
 obstacleNumber.grid(row=n//4,column=j+10,sticky="nwse")
-totalMoves=tk.Label(game)
-clearObstacles=tk.Button(game,text="Clear all obstacles",command=undoObstacles)
+totalMoves=tk.Label(controls)
+clearObstacles=tk.Button(controls,text="Clear all obstacles",command=undoObstacles)
 clearObstacles.grid(row=n//8,column=j+10,sticky="nwse")
 root.after(2000,startrender)
 root.mainloop()
