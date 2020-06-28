@@ -1,7 +1,6 @@
 import math
 import heap as hp
 import tkinter as tk
-from threading import Thread, Event
 import time
 class Button:
     __slots__=["x","y","button"]
@@ -16,6 +15,8 @@ class Button:
 
     def onEnter(self,e):
         global obstacle
+        if(self.button["bg"]=="yellow"):
+            return
         # print(obstacle)
         if(self.button["bg"]!="blue"):
             if(self.button["bg"]=="white"):
@@ -75,31 +76,39 @@ class node:
         return ("Coordinates:{0},{1} ; Dist from parent: {2} ; Dist from goal:{3} ; Heurestic: {4}".format(self.x,self.y,self.g,self.h,self.f))
 
     def heuristic(self,goal):
-        print(goal,"Heurisitcs")
         return math.sqrt((goal[0]-self.x)**2+(goal[1]-self.y)**2)
+
+def undoObstacles():
+    while(len(obstacle)>0):
+        for block in obstacle:
+            arr[block[0]][block[1]].onEnter("<Enter>")
+
 
 def construct(goal,moves):
     global arr
+    if(goal==None):
+        totalMoves["text"]="The goal cannot be reached"
+        totalMoves.grid(row=n//3,column=n+9,sticky="nswe")
     if(goal.parent==None):
         # print(goal,"The starting point")
-        arr[goal.x][goal.y].button["bg"]="blue"
+        # arr[goal.x][goal.y].button["bg"]="blue"
         totalMoves.grid(row=n//3,column=n+9,sticky="nswe")
         totalMoves["text"]="The number of moves taken to solve is: \n"+str(moves)
         print()
         return
     construct(goal.parent,moves+1)
-    arr[goal.x][goal.y].button["bg"]="blue"
+    if(arr[goal.x][goal.y].button["bg"]!="yellow"):
+        arr[goal.x][goal.y].button["bg"]="blue"
     # print("[",goal.x,",",goal.y,"]",end="  ")
-    print(goal)
 
 def erase(sol):
     global arr
     if(sol==None):
         return
     if(sol.parent==None):
-        arr[sol.x][sol.y].button["bg"]="black"
         return
-    arr[sol.x][sol.y].button["bg"]="black"
+    if(arr[sol.x][sol.y].button["bg"]!="yellow"):
+        arr[sol.x][sol.y].button["bg"]="black"
     erase(sol.parent)
     
     
@@ -107,7 +116,6 @@ def astar(s,goal):
     open=hp.Heap([])
     closed=[]
     print(goal,"The goal")
-    print(obstacle,"The obstacle")
     src=node(s[0],s[1],None)
     open.push([src.f,src])
     sol=None
@@ -166,6 +174,9 @@ def renderGame(source,goal):
 
     sol=astar([source[0],source[1]],goal) #Called initally and at an interval of 16seconds
     # print(sol,"The sol returned")
+    if(sol==None):
+        totalMoves["text"]="The goal cannot be reached"
+        totalMoves.grid(row=n//3,column=n+9,sticky="nswe")
     root.after(8000,resume,sol)
     # print(obstacle,"this timeeee...")
     
@@ -176,6 +187,8 @@ def startrender():
         global goal
         source=list(map(int,sourceValue.get().split(',')))
         goal=list(map(int,goalValue.get().split(',')))
+        arr[source[0]][source[1]].button["bg"]="yellow"
+        arr[goal[0]][goal[1]].button["bg"]="yellow"
         initialise.destroy()
         root.after(10000,renderGame,source,goal)
 
@@ -193,7 +206,7 @@ def startrender():
 # obstacle=[[i,2]for i in range(99)]+[[i,60]for i in range(99)]
 obstacle=[]
 goal=[]
-n=20
+n=30
 root=tk.Tk()
 root.title("A* Pathfind Tracing")
 # root.attributes('-zoomed',True)
@@ -206,6 +219,7 @@ for i in range(n):
         arr[i][j]=Button(game)
         arr[i][j].posSet(i,j)
 print("Before")
+
 closeButton=tk.Button(game,text="Close the game",command=root.destroy)
 closeButton.grid(row=n//2,column=j+10,sticky="nwes")
 obstacleInfo=tk.Frame(game)
@@ -215,5 +229,7 @@ displayObstacle=tk.Label(obstacleInfo,text=obstacleText).grid(row=n//4,column=j+
 obstacleNumber=tk.Label(obstacleInfo,text=str(len(obstacle)))
 obstacleNumber.grid(row=n//4,column=j+10,sticky="nwse")
 totalMoves=tk.Label(game)
+clearObstacles=tk.Button(game,text="Clear all obstacles",command=undoObstacles)
+clearObstacles.grid(row=n//8,column=j+10,sticky="nwse")
 root.after(2000,startrender)
 root.mainloop()
