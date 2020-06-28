@@ -2,6 +2,7 @@ import math
 import heap as hp
 import tkinter as tk
 import time
+#Changed in version2
 class Button:
     __slots__=["x","y","button"]
     def __init__(self,master):
