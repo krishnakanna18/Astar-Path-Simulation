@@ -55,7 +55,7 @@ class node:
         if(parent!=None):
             self.parent=parent
             # self.g=self.heuristic((parent.x,parent.y))
-            self.g+=1
+            self.g=parent.g+1
         self.h=self.heuristic(goal)
         self.f=self.g+self.h
 
@@ -75,6 +75,7 @@ class node:
         return ("Coordinates:{0},{1} ; Dist from parent: {2} ; Dist from goal:{3} ; Heurestic: {4}".format(self.x,self.y,self.g,self.h,self.f))
 
     def heuristic(self,goal):
+        print(goal,"Heurisitcs")
         return math.sqrt((goal[0]-self.x)**2+(goal[1]-self.y)**2)
 
 def construct(goal,moves):
@@ -84,10 +85,12 @@ def construct(goal,moves):
         arr[goal.x][goal.y].button["bg"]="blue"
         totalMoves.grid(row=n//3,column=n+9,sticky="nswe")
         totalMoves["text"]="The number of moves taken to solve is: \n"+str(moves)
+        print()
         return
     construct(goal.parent,moves+1)
     arr[goal.x][goal.y].button["bg"]="blue"
-    # print(goal)
+    # print("[",goal.x,",",goal.y,"]",end="  ")
+    print(goal)
 
 def erase(sol):
     global arr
@@ -103,6 +106,8 @@ def erase(sol):
 def astar(s,goal):
     open=hp.Heap([])
     closed=[]
+    print(goal,"The goal")
+    print(obstacle,"The obstacle")
     src=node(s[0],s[1],None)
     open.push([src.f,src])
     sol=None
@@ -160,14 +165,15 @@ def renderGame(source,goal):
 
 
     sol=astar([source[0],source[1]],goal) #Called initally and at an interval of 16seconds
-    print(sol,"The sol returned")
+    # print(sol,"The sol returned")
     root.after(8000,resume,sol)
-    print(obstacle,"this timeeee...")
+    # print(obstacle,"this timeeee...")
     
 
 def startrender():
 
     def sourceInit(source,sourceValue,goalValue):
+        global goal
         source=list(map(int,sourceValue.get().split(',')))
         goal=list(map(int,goalValue.get().split(',')))
         initialise.destroy()
@@ -186,8 +192,8 @@ def startrender():
 
 # obstacle=[[i,2]for i in range(99)]+[[i,60]for i in range(99)]
 obstacle=[]
-goal=[5,8]
-n=4
+goal=[]
+n=20
 root=tk.Tk()
 root.title("A* Pathfind Tracing")
 # root.attributes('-zoomed',True)

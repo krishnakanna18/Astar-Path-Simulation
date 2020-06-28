@@ -11,7 +11,7 @@ class node:
         if(parent!=None):
             self.parent=parent
             # self.g=self.heuristic((parent.x,parent.y))
-            self.g+=1
+            self.g=parent.g+1
         self.h=self.heuristic(goal)
         self.f=self.g+self.h
 
@@ -33,11 +33,13 @@ class node:
     def heuristic(self,goal):
         return math.sqrt((goal[0]-self.x)**2+(goal[1]-self.y)**2)
 
-def construct(goal):
+def construct(goal,moves):
     if(goal.parent==None):
         print(goal,"The starting point")
+        print(moves,": Taken")
         return
-    construct(goal.parent)
+    construct(goal.parent,moves+1)
+    # print("[",goal.x,",",goal.y,"]",end="  ")
     print(goal)
     
     
@@ -55,7 +57,8 @@ def astar(s,goal):
             return -1
         cur=open.pop()[1]
         if([cur.x,cur.y]==goal):
-            construct(cur)
+            moves=0
+            construct(cur,moves)
             sol=cur
             # erase(sol)
             # astar(sol,goal)
@@ -64,7 +67,8 @@ def astar(s,goal):
         closed.append([cur.x,cur.y])
         for possible in cur.succesors():
             if(possible.points()==goal):
-                construct(possible)
+                moves=0
+                construct(possible,moves)
                 sol=possible
                 # erase(sol)
                 # astar(s,goal)
@@ -82,7 +86,9 @@ def astar(s,goal):
                 open.push([possible.f,possible])
 
 # obstacle=[[i,2]for i in range(99)]+[[i,60]for i in range(99)]
-obstacle=[[1,i] for i in range(2,12)]
-goal=[1,12]
+# obstacle=[[i,2] for i in range(0,5)]
+obstacle=[[18, 16], [19, 16], [19, 17], [19, 18], [18, 18], [17, 18], [16, 18], [15, 18], [14, 18], [13, 18], [12, 18], [11, 18], [10, 18], [9, 18], [8, 18], [7, 18], [6, 18], [5, 18], [4, 18], [3, 18], [2, 18], [2, 17], [2, 16], [2, 15], [2, 14], [2, 13], [2, 12], [2, 11], [2, 10], [2, 9], [2, 8], [2, 7], [2, 6], [2, 5], [2, 4], [2, 3], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [9, 2], [9, 3], [10, 3], [11, 3], [12, 3], [13, 3], [14, 3], [14, 2], [15, 2], [16, 2], [17, 2], [18, 2], [19, 2]]
+print(obstacle)
+goal=[19,0]
 n=20
-astar([1,1],goal)
+astar([19,19],goal)
