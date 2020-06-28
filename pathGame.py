@@ -170,7 +170,9 @@ def renderGame(source,goal):
     def resume(sol):
         erase(sol)
         totalMoves["text"]=""
-        root.after(8000,renderGame,source,goal)
+        st=time.time()
+        root.after(2000,renderGame,source,goal)
+        print("Time taken: ",time.time()-st)
 
 
     sol=astar([source[0],source[1]],goal) #Called initally and at an interval of 16seconds
@@ -178,7 +180,7 @@ def renderGame(source,goal):
     if(sol==None):
         totalMoves["text"]="The goal cannot be reached"
         totalMoves.grid(row=n//3,column=n+9,sticky="nswe")
-    root.after(8000,resume,sol)
+    root.after(3000,resume,sol)
     # print(obstacle,"this timeeee...")
     
 
@@ -191,7 +193,7 @@ def startrender():
         arr[source[0]][source[1]].button["bg"]="yellow"
         arr[goal[0]][goal[1]].button["bg"]="yellow"
         initialise.destroy()
-        root.after(10000,renderGame,source,goal)
+        root.after(6000,renderGame,source,goal)
 
     initialise=tk.Toplevel()
     sourceLabel=tk.Label(initialise,text="Enter source coordinates").grid(row=0,column=0,sticky="w")
