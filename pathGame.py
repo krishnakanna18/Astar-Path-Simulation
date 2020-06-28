@@ -12,7 +12,7 @@ class Button:
         self.button["pady"]=master.winfo_screenheight()//200
         self.button["command"]=self.onclick
         self.button.bind("<Enter>",self.onEnter)
-        # self.button.bind("<Leave>",self.onLeave)
+        self.button.bind("<Leave>",self.onLeave)
 
     def onEnter(self,e):
         global obstacle
