@@ -2,75 +2,8 @@ import math
 import heap as hp
 import tkinter as tk
 import time
+from Buttons import *
 #Changed in version2
-class Button:
-    __slots__=["x","y","button"]
-    def __init__(self,master):
-        self.button=tk.Button(master)
-        self.button["bg"]="black"
-        self.button.rowconfigure(0,weight=2)
-        self.button.columnconfigure(0,weight=2)
-        self.button["padx"]=master.winfo_screenwidth()//200
-        self.button["pady"]=master.winfo_screenheight()//200
-        self.button["command"]=self.onPress
-        self.button.bind("<Enter>",self.onMotion)
-        # self.button.bind("<ButtonPress-1>",self.onPress)
-        # self.button.bind("<B1-Motion>",self.onMotion)
-        # self.button.bind("<ButtonRelease-1>",self.onRelase)
-        # self.button.bind("<Leave>",self.onLeave)
-
-    def onPress(self):
-        global press
-        print("Pressed button",press)
-        if(press==1):
-            press=0
-            return
-        if(press==0):
-            self.change()
-            press=1
-            return
-
-    def onMotion(self,e):
-        global press
-        if(press==0):
-            return
-        # print("on Motion")
-        if(press==1):
-            self.change()
-
-    def change(self):
-        global obstacle
-        if(self.button["bg"]=="yellow"):
-            return
-        # print(obstacle)
-        if(self.button["bg"]!="blue"):
-            if(self.button["bg"]=="white"):
-                self.button["bg"]="black"
-                obstacle.remove([self.x,self.y])
-                obstacleNumber["text"]=str(len(obstacle))
-            else:
-                self.button["bg"]="white"
-                obstacle.append([self.x,self.y])
-                obstacleNumber["text"]=str(len(obstacle))
-        
-
-
-    # def onLeave(self,e):
-    #     self.button["bg"]="red"
-
-    def onclick(self):
-        if(self.button["bg"]=="red"):
-            self.button["bg"]="black"
-        else:
-            self.button["bg"]="red"
-    def posSet(self,x,y):
-        self.x=x
-        self.y=y
-        # self.button["text"]="{0}{1}".format(x,y)
-        self.button.grid(row=x,column=y)
-    def posGet(self):
-        return [self.x,self.y]
-
 class node:
     __slots__=["x","y","g","h","f","parent","hid","v"]
     def __init__(self,x,y,parent):
@@ -87,6 +20,7 @@ class node:
         self.f=self.g+self.h
 
     def succesors(self):
+        # obstacle=Buttons.obstacle
         global obstacle
         global n
         possible=[(1,0),(-1,0),(0,1),(0,-1),(1,1),(-1,-1),(1,-1),(-1,1)]
@@ -103,22 +37,6 @@ class node:
 
     def heuristic(self,goal):
         return math.sqrt((goal[0]-self.x)**2+(goal[1]-self.y)**2)
-
-
-def buttonsCreate(master):
-    arr=[[0 for j in range(n)] for i in range(n)]
-    # astar([1,1],goal)
-    for i in range(n):
-        for j in range(n):
-            arr[i][j]=Button(master)
-            arr[i][j].posSet(i,j)
-    return arr
-
-
-def undoObstacles():
-    while(len(obstacle)>0):
-        for block in obstacle:
-            arr[block[0]][block[1]].change()
 
 
 def construct(goal,moves):
@@ -150,6 +68,7 @@ def erase(sol):
     
     
 def astar(s,goal):
+    print(obstacle)
     open=hp.Heap([])
     closed=[]
     print(goal,"The goal")
@@ -197,31 +116,67 @@ def astar(s,goal):
     erase(sol)
     # astar(s,goal)
 
+# def resume(sol,source,goal):
+#         erase(sol)
+#         Pause.grid_forget()
+#         # Pause["text"]=""
+#         totalMoves["text"]=""
+#         st=time.time()
+#         root.after(5000,renderGame,source,goal)
+#         print("Time taken: ",time.time()-st)
+
+# def pause(sol,source,goal):
+#     global paused
+#     if(paused==1):
+#         Pause["text"]="Pause"
+#         paused=0
+#         resume(sol,source,goal)
+#         return
+#     else:
+#         paused=1
+#         print("Atleast")
+#         Pause["text"]="Resume"
+
+# def renderGame(source,goal):
+#     global n
+#     global paused
+#     print(source,"In render game")
+#     # for i in range(n):
+#     #     for j in range(n):
+#     #         arr[i][j].button.unbind("<Enter>")
+
+#     sol=astar([source[0],source[1]],goal) #Called initally and at an interval of 16seconds
+#     # print(sol,"The sol returned")
+#     if(sol==None):
+#         totalMoves["text"]="The goal cannot be reached"
+#         totalMoves.grid(row=n//3,column=n+10,sticky="nswe")
+#     Pause.grid(row=n//2,column=n+10)
+#     Pause["command"]=lambda : pause(sol,source,goal)
+#     # root.after(3000,resume,sol,source,goal)
+#     # print(obstacle,"this timeeee...")
 
 def renderGame(source,goal):
-    global arr
     global n
-    global obstacle
+    global paused
     print(source,"In render game")
-    # for i in range(n):
-    #     for j in range(n):
-    #         arr[i][j].button.unbind("<Enter>")
-    def resume(sol):
+
+    def resume(sol,source,goal):
         erase(sol)
+        Pause.grid_forget()
+        # Pause["text"]=""
         totalMoves["text"]=""
         st=time.time()
         root.after(5000,renderGame,source,goal)
         print("Time taken: ",time.time()-st)
 
-
     sol=astar([source[0],source[1]],goal) #Called initally and at an interval of 16seconds
     # print(sol,"The sol returned")
     if(sol==None):
         totalMoves["text"]="The goal cannot be reached"
-        totalMoves.grid(row=n//3,column=n+9,sticky="nswe")
-    root.after(3000,resume,sol)
+        totalMoves.grid(row=n//3,column=n+10,sticky="nswe")
+
+    root.after(3000,resume,sol,source,goal)
     # print(obstacle,"this timeeee...")
-    
 
 def startrender():
 
@@ -246,7 +201,6 @@ def startrender():
     initialise.mainloop()
 
 # obstacle=[[i,2]for i in range(99)]+[[i,60]for i in range(99)]
-obstacle=[]
 goal=[]
 n=20
 press=0
@@ -256,22 +210,15 @@ root.title("A* Pathfind Tracing")
 game=tk.Frame(root)
 # game.pack(fill=tk.BOTH,expand=True)
 game.pack()
-Grid=tk.Frame(game)
-arr=buttonsCreate(Grid)
+buttons=Buttons(n,game)
+Grid=Buttons.Grid
+arr=buttons.buttonsCreate(Grid)
 print("Before")
 Grid.grid(row=0,column=0)
-controls=tk.Frame(game)
-controls.grid(row=0,column=n+4)
-closeButton=tk.Button(controls,text="Close the game",command=root.destroy)
-closeButton.grid(row=n//2,column=n+10,sticky="nwes")
-obstacleInfo=tk.Frame(controls)
-obstacleInfo.grid(row=n//4,column=n+10)
-obstacleText="Number of obstacle is: "
-displayObstacle=tk.Label(obstacleInfo,text=obstacleText).grid(row=n//4,column=n+8,sticky="nwse")
-obstacleNumber=tk.Label(obstacleInfo,text=str(len(obstacle)))
-obstacleNumber.grid(row=n//4,column=n+10,sticky="nwse")
-totalMoves=tk.Label(controls)
-clearObstacles=tk.Button(controls,text="Clear all obstacles",command=undoObstacles)
-clearObstacles.grid(row=n//8,column=n+10,sticky="nwse")
+Controls=Control(n,game,root)
+Pause=Control.Pause
+Pause["text"]="Pause"
+paused=0
+totalMoves=Control.totalMoves
 root.after(2000,startrender)
 root.mainloop()
