@@ -116,44 +116,6 @@ def astar(s,goal):
     erase(sol)
     # astar(s,goal)
 
-# def resume(sol,source,goal):
-#         erase(sol)
-#         Pause.grid_forget()
-#         # Pause["text"]=""
-#         totalMoves["text"]=""
-#         st=time.time()
-#         root.after(5000,renderGame,source,goal)
-#         print("Time taken: ",time.time()-st)
-
-# def pause(sol,source,goal):
-#     global paused
-#     if(paused==1):
-#         Pause["text"]="Pause"
-#         paused=0
-#         resume(sol,source,goal)
-#         return
-#     else:
-#         paused=1
-#         print("Atleast")
-#         Pause["text"]="Resume"
-
-# def renderGame(source,goal):
-#     global n
-#     global paused
-#     print(source,"In render game")
-#     # for i in range(n):
-#     #     for j in range(n):
-#     #         arr[i][j].button.unbind("<Enter>")
-
-#     sol=astar([source[0],source[1]],goal) #Called initally and at an interval of 16seconds
-#     # print(sol,"The sol returned")
-#     if(sol==None):
-#         totalMoves["text"]="The goal cannot be reached"
-#         totalMoves.grid(row=n//3,column=n+10,sticky="nswe")
-#     Pause.grid(row=n//2,column=n+10)
-#     Pause["command"]=lambda : pause(sol,source,goal)
-#     # root.after(3000,resume,sol,source,goal)
-#     # print(obstacle,"this timeeee...")
 
 def renderGame(source,goal):
     global n
