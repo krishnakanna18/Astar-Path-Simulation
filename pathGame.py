@@ -20,10 +20,9 @@ class Button:
         # self.button.bind("<Leave>",self.onLeave)
 
     def onPress(self):
-        print("Pressed button")
         global press
+        print("Pressed button",press)
         if(press==1):
-            self.change()
             press=0
             return
         if(press==0):
@@ -53,6 +52,7 @@ class Button:
                 self.button["bg"]="white"
                 obstacle.append([self.x,self.y])
                 obstacleNumber["text"]=str(len(obstacle))
+        
 
 
     # def onLeave(self,e):
@@ -104,6 +104,17 @@ class node:
     def heuristic(self,goal):
         return math.sqrt((goal[0]-self.x)**2+(goal[1]-self.y)**2)
 
+
+def buttonsCreate(master):
+    arr=[[0 for j in range(n)] for i in range(n)]
+    # astar([1,1],goal)
+    for i in range(n):
+        for j in range(n):
+            arr[i][j]=Button(master)
+            arr[i][j].posSet(i,j)
+    return arr
+
+
 def undoObstacles():
     while(len(obstacle)>0):
         for block in obstacle:
@@ -114,11 +125,11 @@ def construct(goal,moves):
     global arr
     if(goal==None):
         totalMoves["text"]="The goal cannot be reached"
-        totalMoves.grid(row=n//3,column=n+9,sticky="nswe")
+        totalMoves.grid(row=n//3,column=n+10,sticky="nswe")
     if(goal.parent==None):
         # print(goal,"The starting point")
         # arr[goal.x][goal.y].button["bg"]="blue"
-        totalMoves.grid(row=n//3,column=n+9,sticky="nswe")
+        totalMoves.grid(row=n//3,column=n+10,sticky="nswe")
         totalMoves["text"]="The number of moves taken to solve is: \n"+str(moves)
         print()
         return
@@ -231,7 +242,7 @@ def startrender():
     goalValue=tk.Entry(initialise)
     goalValue.grid(row=1,column=1,sticky="e")
     source=[]
-    enter=tk.Button(initialise,text="Enter source",command=lambda :sourceInit(source,sourceValue,goalValue)).grid(row=2,column=1,sticky="we")
+    enter=tk.Button(initialise,text="Start!",command=lambda :sourceInit(source,sourceValue,goalValue)).grid(row=2,column=1,sticky="we")
     initialise.mainloop()
 
 # obstacle=[[i,2]for i in range(99)]+[[i,60]for i in range(99)]
@@ -246,26 +257,21 @@ game=tk.Frame(root)
 # game.pack(fill=tk.BOTH,expand=True)
 game.pack()
 Grid=tk.Frame(game)
-arr=[[0 for j in range(n)] for i in range(n)]
-# astar([1,1],goal)
-for i in range(n):
-    for j in range(n):
-        arr[i][j]=Button(Grid)
-        arr[i][j].posSet(i,j)
+arr=buttonsCreate(Grid)
 print("Before")
 Grid.grid(row=0,column=0)
 controls=tk.Frame(game)
 controls.grid(row=0,column=n+4)
 closeButton=tk.Button(controls,text="Close the game",command=root.destroy)
-closeButton.grid(row=n//2,column=j+10,sticky="nwes")
+closeButton.grid(row=n//2,column=n+10,sticky="nwes")
 obstacleInfo=tk.Frame(controls)
-obstacleInfo.grid(row=n//4,column=j+10)
+obstacleInfo.grid(row=n//4,column=n+10)
 obstacleText="Number of obstacle is: "
-displayObstacle=tk.Label(obstacleInfo,text=obstacleText).grid(row=n//4,column=j+8,sticky="nwse")
+displayObstacle=tk.Label(obstacleInfo,text=obstacleText).grid(row=n//4,column=n+8,sticky="nwse")
 obstacleNumber=tk.Label(obstacleInfo,text=str(len(obstacle)))
-obstacleNumber.grid(row=n//4,column=j+10,sticky="nwse")
+obstacleNumber.grid(row=n//4,column=n+10,sticky="nwse")
 totalMoves=tk.Label(controls)
 clearObstacles=tk.Button(controls,text="Clear all obstacles",command=undoObstacles)
-clearObstacles.grid(row=n//8,column=j+10,sticky="nwse")
+clearObstacles.grid(row=n//8,column=n+10,sticky="nwse")
 root.after(2000,startrender)
 root.mainloop()
