@@ -128,14 +128,14 @@ def astar(s,goal):
 # def pause(sol,source,goal):
 #     global paused
 #     if(paused==1):
-#         Pause["text"]="Pause"
+#         Pause["text"]="Stop"
 #         paused=0
 #         resume(sol,source,goal)
 #         return
 #     else:
 #         paused=1
 #         print("Atleast")
-#         Pause["text"]="Resume"
+#         Pause["text"]="Start"
 
 # def renderGame(source,goal):
 #     global n
@@ -150,8 +150,8 @@ def astar(s,goal):
 #     if(sol==None):
 #         totalMoves["text"]="The goal cannot be reached"
 #         totalMoves.grid(row=n//3,column=n+10,sticky="nswe")
-#     Pause.grid(row=n//2,column=n+10)
-#     Pause["command"]=lambda : pause(sol,source,goal)
+#     # Pause.grid(row=n//2,column=n+10)
+#     # Pause["command"]=lambda : pause(sol,source,goal)
 #     # root.after(3000,resume,sol,source,goal)
 #     # print(obstacle,"this timeeee...")
 
@@ -202,7 +202,7 @@ def startrender():
 
 # obstacle=[[i,2]for i in range(99)]+[[i,60]for i in range(99)]
 goal=[]
-n=20
+n=30
 press=0
 root=tk.Tk()
 root.title("A* Pathfind Tracing")
@@ -217,8 +217,8 @@ print("Before")
 Grid.grid(row=0,column=0)
 Controls=Control(n,game,root)
 Pause=Control.Pause
-Pause["text"]="Pause"
-paused=0
+Pause["text"]="Start"
+paused=1
 totalMoves=Control.totalMoves
 root.after(2000,startrender)
 root.mainloop()
