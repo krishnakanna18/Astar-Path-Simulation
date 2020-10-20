@@ -65,6 +65,11 @@ def erase(sol):
     if(arr[sol.x][sol.y].button["bg"]!="yellow"):
         arr[sol.x][sol.y].button["bg"]="black"
     erase(sol.parent)
+
+def pathnode(x,y):
+    global arr
+    if(arr[x][y].button["bg"]!="blue" and arr[x][y].button["bg"]!="yellow"):
+        arr[x][y].button["bg"]!="green"
     
     
 def astar(s,goal):
@@ -82,6 +87,7 @@ def astar(s,goal):
             # root.destroy()
             return  None
         cur=open.pop()[1]
+        pathnode(cur.x,cur.y)
         if([cur.x,cur.y]==goal):
             moves=0
             construct(cur,moves)
@@ -202,7 +208,7 @@ def startrender():
 
 # obstacle=[[i,2]for i in range(99)]+[[i,60]for i in range(99)]
 goal=[]
-n=30
+n=18
 press=0
 root=tk.Tk()
 root.title("A* Pathfind Tracing")
